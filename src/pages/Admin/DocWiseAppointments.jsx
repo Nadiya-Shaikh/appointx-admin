@@ -1,20 +1,37 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useContext, useEffect } from 'react'
-import { DoctorContext } from '../../context/DoctorContext'
+import { AdminContext } from '../../context/AdminContext'
 import { AppContext } from '../../context/AppContext'
 import { assets } from '../../assets/assets'
 
+
 const DoctorAppointments = () => {
 const { docId } = useParams()
-  const { dToken, appointments, getAppointments, cancelAppointment, completeAppointment } = useContext(DoctorContext)
+const { aToken, appointments, getAllAppointments, cancelAppointment } = useContext(AdminContext)
   const { slotDateFormat, calculateAge, currency } = useContext(AppContext)
 
-  useEffect(() => {
-    if (dToken) {
-      getAppointments()
-    }
-  }, [dToken])
+//   useEffect(() => {
+//     if (dToken) {
+//       getAppointments()
+//     }
+//   }, [dToken])
+// useEffect(() => {
+//   getAppointments()
+// }, [])
+useEffect(() => {
+  if (aToken) {
+    getAllAppointments()
+  }
+}, [aToken])
+
+
+// const filteredAppointments = appointments.filter(
+//   (item) => item.docId === docId
+// )
+const filteredAppointments = appointments.filter(
+  (item) => item.docId.toString() === docId
+)
 
   return (
     <div className='w-full max-w-6xl m-5 '>
@@ -31,7 +48,7 @@ const { docId } = useParams()
           <p>Fees</p>
           <p>Action</p>
         </div>
-        {appointments.map((item, index) => (
+        {filteredAppointments.map((item, index) => (
           <div className='flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50' key={index}>
             <p className='max-sm:hidden'>{index}</p>
             <div className='flex items-center gap-2'>

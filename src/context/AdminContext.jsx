@@ -33,6 +33,9 @@ const AdminContextProvider = (props) => {
 
     }
 
+   
+
+
     // Function to change doctor availablity using API
     const changeAvailability = async (docId) => {
         try {
@@ -115,6 +118,7 @@ const AdminContextProvider = (props) => {
         aToken, setAToken,
         doctors,
         getAllDoctors,
+      
         changeAvailability,
         appointments,
         getAllAppointments,
