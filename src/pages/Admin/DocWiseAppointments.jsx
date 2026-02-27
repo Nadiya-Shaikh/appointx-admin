@@ -22,9 +22,14 @@ const { aToken, appointments, getAllAppointments, cancelAppointment } = useConte
 useEffect(() => {
   if (aToken) {
     getAllAppointments()
+
+    const interval = setInterval(() => {
+      getAllAppointments()
+    }, 5000) // every 5 sec refresh
+
+    return () => clearInterval(interval)
   }
 }, [aToken])
-
 
 // const filteredAppointments = appointments.filter(
 //   (item) => item.docId === docId
@@ -62,15 +67,40 @@ const filteredAppointments = appointments.filter(
             <p className='max-sm:hidden'>{calculateAge(item.userData.dob)}</p>
             <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
             <p>{currency}{item.amount}</p>
-            {item.cancelled
-              ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-              : item.isCompleted
-                ? <p className='text-green-500 text-xs font-medium'>Completed</p>
-                : <div className='flex'>
-                  <img onClick={() => cancelAppointment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon} alt="" />
-                  <img onClick={() => completeAppointment(item._id)} className='w-10 cursor-pointer' src={assets.tick_icon} alt="" />
-                </div>
-            }
+           {item.cancelled ? (
+  <div className="flex flex-col">
+
+    <p className='text-red-400 text-xs font-medium'>
+      Cancelled
+    </p>
+
+    {item.refundStatus === "processing" && (
+      <p className="text-yellow-500 text-xs">
+        Refund Processing...
+      </p>
+    )}
+
+    {item.refundStatus === "refunded" && (
+      <p className="text-green-600 text-xs">
+        Refunded
+      </p>
+    )}
+
+  </div>
+) : item.isCompleted ? (
+  <p className='text-green-500 text-xs font-medium'>
+    Completed
+  </p>
+) : (
+  <div className='flex'>
+    <button
+      onClick={() => cancelAppointment(item._id)}
+      className='cursor-pointer text-red-400 text-xs font-medium border border-red-400 px-2 py-1 rounded hover:bg-red-50'
+    >
+      Force Cancel
+    </button>
+  </div>
+)}
           </div>
         ))}
       </div>

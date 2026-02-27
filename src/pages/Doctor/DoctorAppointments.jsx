@@ -10,9 +10,20 @@ const { docId } = useParams()
   const { dToken, appointments, getAppointments, cancelAppointment, completeAppointment } = useContext(DoctorContext)
   const { slotDateFormat, calculateAge, currency } = useContext(AppContext)
 
+  // useEffect(() => {
+  //   if (dToken) {
+  //     getAppointments()
+  //   }
+  // }, [dToken])
   useEffect(() => {
     if (dToken) {
       getAppointments()
+  
+      const interval = setInterval(() => {
+        getAppointments()
+      }, 5000) // every 5 sec refresh
+  
+      return () => clearInterval(interval)
     }
   }, [dToken])
 
@@ -45,7 +56,7 @@ const { docId } = useParams()
             <p className='max-sm:hidden'>{calculateAge(item.userData.dob)}</p>
             <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
             <p>{currency}{item.amount}</p>
-            {item.cancelled
+            {/* {item.cancelled
               ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
               : item.isCompleted
                 ? <p className='text-green-500 text-xs font-medium'>Completed</p>
@@ -53,7 +64,59 @@ const { docId } = useParams()
                   <img onClick={() => cancelAppointment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon} alt="" />
                   <img onClick={() => completeAppointment(item._id)} className='w-10 cursor-pointer' src={assets.tick_icon} alt="" />
                 </div>
-            }
+            } */}
+
+{item.cancelled ? (
+
+  <div className="flex flex-col">
+    
+    <p className='text-red-400 text-xs font-medium'>
+      Cancelled
+    </p>
+
+    {/* Refund Status */}
+    {item.refundStatus === "processing" && (
+      <span className="text-yellow-500 text-xs">
+        Refund Processing...
+      </span>
+    )}
+
+    {item.refundStatus === "refunded" && (
+      <span className="text-green-600 text-xs font-medium">
+        Refunded 
+      </span>
+    )}
+
+  </div>
+
+) : item.isCompleted ? (
+
+  <p className='text-green-500 text-xs font-medium'>
+    Completed
+  </p>
+
+) : (
+
+  <div className='flex'>
+    <img
+      onClick={() => cancelAppointment(item._id)}
+      className='w-10 cursor-pointer'
+      src={assets.cancel_icon}
+      alt=""
+    />
+    <img
+      onClick={() => completeAppointment(item._id)}
+      className='w-10 cursor-pointer'
+      src={assets.tick_icon}
+      alt=""
+    />
+  </div>
+
+)}
+
+
+
+
           </div>
         ))}
       </div>
